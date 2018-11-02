@@ -59,11 +59,22 @@ def filtered_set_union(a, b):
         # assume that we are using item (which is a set)
         for other in b:
             # no repeating elements in either set
-            print item.intersection(other)
             if item.intersection(other) == set():
                 working_list.append(item.union(other))
                 
     return working_list
+
+def area_difference(set_of_rects):
+    if len(set_of_rects) == 1:
+        return list(set_of_rects)[0][0]*list(set_of_rects)[0][1]
+
+    min_area = list(set_of_rects)[0][0]*list(set_of_rects)[0][1]
+    max_area = min_area
+    for rect in set_of_rects:
+        rect_area = rect[0] * rect[1]
+        min_area = rect_area if rect_area < min_area else min_area
+        max_area = rect_area if rect_area > max_area else max_area
+    return max_area - min_area
 
 def mondrian_puzzle(n):
     arr = [ [ [] for i in range(n+1) ] for row in range(n+1) ]
@@ -90,12 +101,12 @@ def mondrian_puzzle(n):
                     working_list.extend(set_res)
             
             working_list.append(set([(i,j)]))
-            print "%d, %d"%(i,j)
-            print working_list
+            #print "%d, %d"%(i,j)
+            #print working_list
             
             arr[i][j] = working_list
     
-    return arr
+    return min([area_difference(sol) for sol in arr[n][n]])
 
 
 import unittest
@@ -104,8 +115,13 @@ class TestMondrian(unittest.TestCase):
         self.assertEqual(filtered_set_union([set([(1,2)])], [set([(1,2)])]), [])
         self.assertEqual(filtered_set_union([set([(1,2)])], [set([(2,2)])]), [set([(1,2),(2,2)])])
     def test_mondrian(self):
-        self.assertEqual(mondrian_puzzle(3), [])
-
-
+        self.assertEqual(mondrian_puzzle(3), 2)
+    def test_area_diff(self):
+        self.assertEqual(area_difference(set([(1,2), (2,3)])), 4)
+        self.assertEqual(area_difference(set([(1,2), (1,3)])), 1)
+        self.assertEqual(area_difference(set([(1,2), (2,2), (1,3)])), 2)
+        self.assertEqual(area_difference(set([(1,1)])), 1)
+        
+    
 if __name__ == "__main__":
     unittest.main()
