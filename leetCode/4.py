@@ -56,7 +56,7 @@ def atoi(s):
         if numerical(c) and not overflow(res, ctoi(c), sign_):
             res = res * 10 + ctoi(c)
         else:
-            if overflow(res, ctoi(c), sign_):
+            if numerical(c) and overflow(res, ctoi(c), sign_):
                 return -2147483648 if sign_ == "-" else  2147483647
             else:
                 return -1 * res if sign_ == "-" else res
@@ -127,6 +127,7 @@ class testAToI(unittest.TestCase):
         self.assertEqual(overflow(214748364, 8, "+"), True)
         self.assertEqual(overflow(214748364, 8, "-"), False)
         self.assertEqual(overflow(20, 1, "+"), False)
+        self.assertEqual(overflow(10100236, 0, "-"), False)
         
     def test_atoi(self):
         self.assertEqual(atoi(""), 0)
@@ -139,7 +140,7 @@ class testAToI(unittest.TestCase):
         self.assertEqual(atoi("42 words"), 42)
         self.assertEqual(atoi("3333333333333333333333333333333"), 2147483647)
         self.assertEqual(atoi("-3333333333333333333333333333333"), -2147483648)
-        
+        self.assertEqual(atoi(" -1010023630o4"), -1010023630)
 if __name__ == "__main__":
     unittest.main()
 
