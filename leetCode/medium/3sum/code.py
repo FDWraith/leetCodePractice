@@ -102,6 +102,7 @@ def sum3(narr):
        
     return solution
 
+
 # Testing
 print "Actual: " + str(sum3([1, 0, -1])) + ", Expected: [ [1, 0, -1] ]"
 print "Actual: " + str(sum3([0])) + ", Expected: []"
@@ -111,4 +112,59 @@ print "Actual: " + str(sum3([1, 0, -1, 1, 0, -1, 2, -2, 0])) + ", Expected: [ [1
 print "Actual: " + str(sum3([-4, 2, 2, 3, 1])) + ", Expected: [ [-4, 2, 2], [-4, 3, 1] ]"
 print "Actual: " + str(sum3([4, -2, -2, -3, -1])) + ", Expected: [ [4, -2, -2], [4, -3, -1] ]"
 
+print "---------------------------------------------------"
 
+"""
+So that worked. 
+
+Except this solution is too expensive space wise, and I seem to have over thought it.
+
+Back to the clever approach, but with one optimization:
+When 2Sum'ing the rest of the array, you can use two pointers to only loop through once
+
+This brings solution down to O(n^2 + nlog(n))
+"""
+
+def sum3Alt(narr):
+    narr.sort()
+    
+    solution = []
+    prevVal = None
+    while (len(narr) >= 3):
+        val = narr[0]
+        narr = narr[1:]
+        
+        if val == prevVal: 
+            continue
+        
+        leftIndex = 0
+        rightIndex = len(narr) - 1
+        
+        while (leftIndex < rightIndex):
+            sumValue = val + narr[leftIndex] + narr[rightIndex]
+            if (sumValue == 0):
+                solution.append([val, narr[leftIndex], narr[rightIndex]])
+                # move left and right indexes to new numbers
+                while (leftIndex < rightIndex and narr[leftIndex] == narr[leftIndex + 1]):
+                    leftIndex += 1
+                while (leftIndex < rightIndex and narr[rightIndex] == narr[rightIndex - 1]):
+                    rightIndex -= 1
+                leftIndex += 1
+                rightIndex -= 1
+            elif (sumValue < 0):
+                leftIndex += 1
+            elif (sumValue > 0):
+                rightIndex -= 1
+
+        prevVal = val
+
+    return solution
+
+
+print "Actual: " + str(sum3Alt([1, 0, -1])) + ", Expected: [ [1, 0, -1] ]"
+print "Actual: " + str(sum3Alt([0])) + ", Expected: []"
+print "Actual: " + str(sum3Alt([1, 0, -1, -1, 2])) + ", Expected: [ [1, 0, -1], [-1, -1, 2] ]"
+print "Actual: " + str(sum3Alt([0, 0, 0, 0])) + ", Expected: [ [0, 0, 0] ]"
+print "Actual: " + str(sum3Alt([1, 0, -1, 1, 0, -1, 2, -2, 0])) + ", Expected: [ [1, 0, -1], [1, 1, -2], [-1, -1, 2], [0, 0, 0], [2, 0, -2] ]"
+print "Actual: " + str(sum3Alt([-4, 2, 2, 3, 1])) + ", Expected: [ [-4, 2, 2], [-4, 3, 1] ]"
+print "Actual: " + str(sum3Alt([4, -2, -2, -3, -1])) + ", Expected: [ [4, -2, -2], [4, -3, -1] ]"
